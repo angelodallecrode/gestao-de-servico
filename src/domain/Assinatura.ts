@@ -34,6 +34,23 @@ export class Assinatura {
 		}
 	}
 
+	// Numero de dias que o pagamento mantem a assinatura ativa.
+	private static readonly DIAS_VALIDADE_PAGAMENTO = 30;
+	private static readonly MS_POR_DIA = 24 * 60 * 60 * 1000;
+
+	// Assinatura esta ativa se houve pagamento ha no maximo 30 dias.
+	estaAtiva(referencia: Date = new Date()): boolean {
+		if (!this.dataUltimoPagamento) {
+			return false;
+		}
+
+		const validade =
+			this.dataUltimoPagamento.getTime() +
+			Assinatura.DIAS_VALIDADE_PAGAMENTO * Assinatura.MS_POR_DIA;
+
+		return referencia.getTime() <= validade;
+	}
+
 	private static requireNonEmpty(value: string, field: string): string {
 		if (!value || value.trim().length === 0) {
 			throw new Error(`${field} obrigatorio.`);

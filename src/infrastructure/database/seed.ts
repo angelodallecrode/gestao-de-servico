@@ -67,7 +67,7 @@ async function main(): Promise<void> {
 			codCli: "CLI-001",
 			inicioFidelidade: new Date("2026-03-01"),
 			fimFidelidade: new Date("2027-03-01"),
-			dataUltimoPagamento: new Date("2026-05-01"),
+			dataUltimoPagamento: new Date("2026-06-01"),
 		},
 		{
 			codigo: "ASS-002",
@@ -75,7 +75,7 @@ async function main(): Promise<void> {
 			codCli: "CLI-002",
 			inicioFidelidade: new Date("2026-03-10"),
 			fimFidelidade: new Date("2027-03-10"),
-			dataUltimoPagamento: new Date("2026-05-10"),
+			dataUltimoPagamento: new Date("2026-06-05"),
 		},
 		{
 			codigo: "ASS-003",
@@ -83,7 +83,7 @@ async function main(): Promise<void> {
 			codCli: "CLI-003",
 			inicioFidelidade: new Date("2026-03-15"),
 			fimFidelidade: new Date("2027-03-15"),
-			dataUltimoPagamento: new Date("2026-05-15"),
+			dataUltimoPagamento: new Date("2026-06-10"),
 		},
 		{
 			codigo: "ASS-004",
@@ -91,7 +91,7 @@ async function main(): Promise<void> {
 			codCli: "CLI-004",
 			inicioFidelidade: new Date("2026-04-01"),
 			fimFidelidade: new Date("2027-04-01"),
-			dataUltimoPagamento: new Date("2026-05-20"),
+			dataUltimoPagamento: new Date("2026-06-14"),
 		},
 		{
 			codigo: "ASS-005",
@@ -99,7 +99,7 @@ async function main(): Promise<void> {
 			codCli: "CLI-005",
 			inicioFidelidade: new Date("2026-04-10"),
 			fimFidelidade: new Date("2027-04-10"),
-			dataUltimoPagamento: new Date("2026-05-25"),
+			dataUltimoPagamento: new Date("2026-06-16"),
 		},
 	];
 

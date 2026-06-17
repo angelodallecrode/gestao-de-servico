@@ -34,6 +34,8 @@ export class CriarAssinatura {
 			codCli,
 			inicioFidelidade,
 			fimFidelidade,
+			// Pagamento inicial no ato da criacao: assinatura nasce ATIVA pela regra dos 30 dias.
+			dataUltimoPagamento: inicioFidelidade,
 		});
 
 		// Persiste a assinatura.

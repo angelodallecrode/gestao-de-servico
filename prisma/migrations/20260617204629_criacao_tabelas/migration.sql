@@ -1,13 +1,13 @@
 -- CreateTable
 CREATE TABLE "Cliente" (
-    "codigo" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "codigo" TEXT NOT NULL PRIMARY KEY,
     "nome" TEXT NOT NULL,
     "email" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "Plano" (
-    "codigo" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "codigo" TEXT NOT NULL PRIMARY KEY,
     "nome" TEXT NOT NULL,
     "custoMensal" REAL NOT NULL,
     "data" DATETIME NOT NULL,
@@ -16,9 +16,9 @@ CREATE TABLE "Plano" (
 
 -- CreateTable
 CREATE TABLE "Assinatura" (
-    "codigo" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "codPlano" INTEGER NOT NULL,
-    "codCli" INTEGER NOT NULL,
+    "codigo" TEXT NOT NULL PRIMARY KEY,
+    "codPlano" TEXT NOT NULL,
+    "codCli" TEXT NOT NULL,
     "inicioFidelidade" DATETIME NOT NULL,
     "fimFidelidade" DATETIME NOT NULL,
     "dataUltimoPagamento" DATETIME,

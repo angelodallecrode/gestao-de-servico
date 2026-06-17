@@ -54,7 +54,7 @@ export class AssinaturaController {
 
 			const filtradas = todas.filter((a) => {
 				if (tipo === "TODOS") return true;
-				const ativo = a.fimFidelidade > agora;
+				const ativo = a.estaAtiva(agora);
 				return tipo === "ATIVOS" ? ativo : !ativo;
 			});
 
@@ -97,7 +97,7 @@ export class AssinaturaController {
 	}
 
 	private static toResponseDTO(assinatura: Assinatura) {
-		const status = assinatura.fimFidelidade > new Date() ? "ATIVO" : "CANCELADO";
+		const status = assinatura.estaAtiva() ? "ATIVO" : "CANCELADO";
 		return {
 			codigo: assinatura.codigo,
 			codCli: assinatura.codCli,
