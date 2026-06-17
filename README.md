@@ -1,4 +1,4 @@
-# Sistema de Gestão de Assinaturas — Fase 2
+# Sistema de Gestão de Assinaturas
 
 Arquitetura mista (serviço principal + microsserviços) integrada por **API Gateway** e
 **message broker**, conforme a especificação da disciplina.
