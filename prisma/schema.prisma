@@ -1,0 +1,38 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Cliente {
+  codigo      String       @id
+  nome        String
+  email       String       @unique
+  assinaturas Assinatura[]
+}
+
+model Plano {
+  codigo      String       @id
+  nome        String
+  custoMensal Float
+  data        DateTime
+  descricao   String
+  assinaturas Assinatura[]
+}
+
+model Assinatura {
+  codigo              String    @id
+  codPlano            String
+  codCli              String
+  inicioFidelidade    DateTime
+  fimFidelidade       DateTime
+  dataUltimoPagamento DateTime?
+
+  plano   Plano   @relation(fields: [codPlano], references: [codigo])
+  cliente Cliente @relation(fields: [codCli], references: [codigo])
+}
