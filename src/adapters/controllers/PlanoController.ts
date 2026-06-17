@@ -28,11 +28,10 @@ export class PlanoController {
 	async atualizarCusto(req: Request, res: Response): Promise<Response> {
 		try {
 			// Extrai dados da requisicao.
-			const { codigo, idPlano } = req.params as { codigo?: string; idPlano?: string };
+			const codigoPlano = Number(req.params.idPlano ?? req.params.codigo);
 			const { custoMensal } = req.body as { custoMensal?: number };
-			const codigoPlano = codigo ?? idPlano;
 
-			if (!codigoPlano || typeof custoMensal !== "number") {
+			if (!Number.isInteger(codigoPlano) || typeof custoMensal !== "number") {
 				return res.status(400).json({ message: "Dados invalidos." });
 			}
 

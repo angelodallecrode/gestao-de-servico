@@ -28,7 +28,7 @@ export class PrismaPlanoRepository implements IPlanoRepository {
 		);
 	}
 
-	async buscarPorCodigo(codigo: string): Promise<Plano | null> {
+	async buscarPorCodigo(codigo: number): Promise<Plano | null> {
 		// Busca plano por codigo.
 		const plano = await this.prisma.plano.findUnique({
 			where: { codigo },
@@ -47,7 +47,7 @@ export class PrismaPlanoRepository implements IPlanoRepository {
 		});
 	}
 
-	async atualizarCusto(codigo: string, custoMensal: number): Promise<Plano> {
+	async atualizarCusto(codigo: number, custoMensal: number): Promise<Plano> {
 		// Atualiza apenas o custo mensal.
 		const plano = await this.prisma.plano.update({
 			where: { codigo },

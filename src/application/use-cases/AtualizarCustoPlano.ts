@@ -3,7 +3,7 @@ import type { IPlanoRepository } from "../interfaces/IPlanoRepository.js";
 
 type AtualizarCustoPlanoInput = {
 	// Codigo do plano.
-	codigo: string;
+	codigo: number;
 	// Novo custo mensal.
 	custoMensal: number;
 };

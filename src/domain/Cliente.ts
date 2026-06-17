@@ -1,16 +1,24 @@
 export class Cliente {
 	// Identificador do cliente.
-	public readonly codigo: string;
+	public readonly codigo: number;
 	// Nome completo do cliente.
 	public readonly nome: string;
 	// Email do cliente.
 	public readonly email: string;
 
-	constructor(params: { codigo: string; nome: string; email: string }) {
+	constructor(params: { codigo: number; nome: string; email: string }) {
 		// Validacoes basicas de preenchimento.
-		this.codigo = Cliente.requireNonEmpty(params.codigo, "codigo");
+		this.codigo = Cliente.requireId(params.codigo, "codigo");
 		this.nome = Cliente.requireNonEmpty(params.nome, "nome");
 		this.email = Cliente.requireEmail(params.email);
+	}
+
+	private static requireId(value: number, field: string): number {
+		if (!Number.isInteger(value) || value <= 0) {
+			throw new Error(`${field} invalido.`);
+		}
+
+		return value;
 	}
 
 	private static requireNonEmpty(value: string, field: string): string {

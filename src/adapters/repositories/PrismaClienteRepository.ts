@@ -26,7 +26,7 @@ export class PrismaClienteRepository implements IClienteRepository {
 		);
 	}
 
-	async buscarPorCodigo(codigo: string): Promise<Cliente | null> {
+	async buscarPorCodigo(codigo: number): Promise<Cliente | null> {
 		// Busca cliente por codigo.
 		const cliente = await this.prisma.cliente.findUnique({
 			where: { codigo },

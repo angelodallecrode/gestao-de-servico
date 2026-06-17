@@ -10,6 +10,7 @@ import { CriarAssinatura } from "../../application/use-cases/CriarAssinatura.js"
 import { ListarAssinaturas } from "../../application/use-cases/ListarAssinaturas.js";
 import { ListarClientes } from "../../application/use-cases/ListarClientes.js";
 import { ListarPlanos } from "../../application/use-cases/ListarPlanos.js";
+import { VerificarAssinaturaAtiva } from "../../application/use-cases/VerificarAssinaturaAtiva.js";
 import { prisma } from "../database/prismaClient.js";
 
 const routes = Router();
@@ -25,11 +26,12 @@ const listarPlanos = new ListarPlanos(planoRepository);
 const atualizarCustoPlano = new AtualizarCustoPlano(planoRepository);
 const criarAssinatura = new CriarAssinatura(assinaturaRepository);
 const listarAssinaturas = new ListarAssinaturas(assinaturaRepository);
+const verificarAssinaturaAtiva = new VerificarAssinaturaAtiva(assinaturaRepository);
 
 // Controladores.
 const clienteController = new ClienteController(listarClientes);
 const planoController = new PlanoController(listarPlanos, atualizarCustoPlano);
-const assinaturaController = new AssinaturaController(criarAssinatura, listarAssinaturas);
+const assinaturaController = new AssinaturaController(criarAssinatura, listarAssinaturas, verificarAssinaturaAtiva);
 
 // Rotas de clientes.
 routes.get("/gestao/clientes", (req, res) => clienteController.listar(req, res));
@@ -40,8 +42,10 @@ routes.patch("/gestao/planos/:idPlano", (req, res) => planoController.atualizarC
 
 // Rotas de assinaturas.
 routes.post("/gestao/assinaturas", (req, res) => assinaturaController.criar(req, res));
+// Consulta sincrona de atividade (usada pelo ServicoPlanosAtivos).
+routes.get("/gestao/assinaturas/:codass/ativa", (req, res) => assinaturaController.verificarAtiva(req, res));
 routes.get("/gestao/assinaturas/:tipo", (req, res) => assinaturaController.listarPorTipo(req, res));
 routes.get("/gestao/assinaturascliente/:codcli", (req, res) => assinaturaController.listarPorCliente(req, res));
 routes.get("/gestao/assinaturasplano/:codplano", (req, res) => assinaturaController.listarPorPlano(req, res));
 
-export { routes };
+export { routes, assinaturaRepository };

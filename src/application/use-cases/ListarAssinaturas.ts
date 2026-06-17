@@ -3,9 +3,9 @@ import type { IAssinaturaRepository } from "../interfaces/IAssinaturaRepository.
 
 type ListarAssinaturasInput = {
 	// Filtro por cliente.
-	codCli?: string;
+	codCli?: number;
 	// Filtro por plano.
-	codPlano?: string;
+	codPlano?: number;
 };
 
 export class ListarAssinaturas {

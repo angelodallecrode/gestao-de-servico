@@ -3,10 +3,10 @@ import type { IAssinaturaRepository } from "../interfaces/IAssinaturaRepository.
 
 type CriarAssinaturaInput = {
 	// Codigo do cliente.
-	codCli: string;
+	codCli: number;
 	// Codigo do plano.
-	codPlano: string;
-	// Valor final informado.
+	codPlano: number;
+	// Valor final informado (com desconto de fidelidade).
 	custoFinal: number;
 	// Descricao informada.
 	descricao: string;
@@ -20,32 +20,23 @@ export class CriarAssinatura {
 		this.assinaturaRepository = assinaturaRepository;
 	}
 
-	async executar({ codCli, codPlano }: CriarAssinaturaInput): Promise<Assinatura> {
+	async executar({ codCli, codPlano, custoFinal, descricao }: CriarAssinaturaInput): Promise<Assinatura> {
 		// Define inicio como hoje.
 		const inicioFidelidade = new Date();
-		// Soma 365 dias para o fim.
+		// Soma 365 dias para o fim (fidelidade de um ano).
 		const fimFidelidade = new Date(inicioFidelidade);
 		fimFidelidade.setDate(fimFidelidade.getDate() + 365);
 
-		const assinatura = new Assinatura({
-			// Codigo simples gerado internamente.
-			codigo: CriarAssinatura.gerarCodigo(codCli, codPlano),
+		// Persiste e retorna a assinatura criada (codigo gerado pelo banco).
+		return this.assinaturaRepository.salvar({
 			codPlano,
 			codCli,
 			inicioFidelidade,
 			fimFidelidade,
 			// Pagamento inicial no ato da criacao: assinatura nasce ATIVA pela regra dos 30 dias.
 			dataUltimoPagamento: inicioFidelidade,
+			custoFinal,
+			descricao,
 		});
-
-		// Persiste a assinatura.
-		await this.assinaturaRepository.salvar(assinatura);
-
-		return assinatura;
-	}
-
-	private static gerarCodigo(codCli: string, codPlano: string): string {
-		// Gera um codigo simples com timestamp.
-		return `${codCli}-${codPlano}-${Date.now()}`;
 	}
 }

@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "../../../generated/prisma/client.js";
 import { Assinatura } from "../../domain/Assinatura.js";
-import type { IAssinaturaRepository } from "../../application/interfaces/IAssinaturaRepository.js";
+import type { IAssinaturaRepository, NovaAssinatura } from "../../application/interfaces/IAssinaturaRepository.js";
 
 export class PrismaAssinaturaRepository implements IAssinaturaRepository {
 	// Cliente Prisma.
@@ -20,21 +20,24 @@ export class PrismaAssinaturaRepository implements IAssinaturaRepository {
 		return assinaturas.map((assinatura: AssinaturaRecord) => this.mapToDomain(assinatura));
 	}
 
-	async salvar(assinatura: Assinatura): Promise<void> {
-		// Cria nova assinatura.
-		await this.prisma.assinatura.create({
+	async salvar(dados: NovaAssinatura): Promise<Assinatura> {
+		// Cria nova assinatura; o codigo e gerado pelo banco (autoincrement).
+		const assinatura = await this.prisma.assinatura.create({
 			data: {
-				codigo: assinatura.codigo,
-				codPlano: assinatura.codPlano,
-				codCli: assinatura.codCli,
-				inicioFidelidade: assinatura.inicioFidelidade,
-				fimFidelidade: assinatura.fimFidelidade,
-				dataUltimoPagamento: assinatura.dataUltimoPagamento,
+				codPlano: dados.codPlano,
+				codCli: dados.codCli,
+				inicioFidelidade: dados.inicioFidelidade,
+				fimFidelidade: dados.fimFidelidade,
+				dataUltimoPagamento: dados.dataUltimoPagamento ?? null,
+				custoFinal: dados.custoFinal,
+				descricao: dados.descricao,
 			},
 		});
+
+		return this.mapToDomain(assinatura);
 	}
 
-	async buscarPorCliente(codCli: string): Promise<Assinatura[]> {
+	async buscarPorCliente(codCli: number): Promise<Assinatura[]> {
 		// Busca assinaturas pelo cliente.
 		const assinaturas = await this.prisma.assinatura.findMany({
 			where: { codCli },
@@ -43,13 +46,36 @@ export class PrismaAssinaturaRepository implements IAssinaturaRepository {
 		return assinaturas.map((assinatura: AssinaturaRecord) => this.mapToDomain(assinatura));
 	}
 
-	async buscarPorPlano(codPlano: string): Promise<Assinatura[]> {
+	async buscarPorPlano(codPlano: number): Promise<Assinatura[]> {
 		// Busca assinaturas pelo plano.
 		const assinaturas = await this.prisma.assinatura.findMany({
 			where: { codPlano },
 		});
 
 		return assinaturas.map((assinatura: AssinaturaRecord) => this.mapToDomain(assinatura));
+	}
+
+	async buscarPorCodigo(codigo: number): Promise<Assinatura | null> {
+		// Busca assinatura pelo codigo.
+		const assinatura = await this.prisma.assinatura.findUnique({
+			where: { codigo },
+		});
+
+		if (!assinatura) {
+			return null;
+		}
+
+		return this.mapToDomain(assinatura);
+	}
+
+	async atualizarDataUltimoPagamento(codigo: number, dataUltimoPagamento: Date): Promise<Assinatura> {
+		// Atualiza apenas a data do ultimo pagamento.
+		const assinatura = await this.prisma.assinatura.update({
+			where: { codigo },
+			data: { dataUltimoPagamento },
+		});
+
+		return this.mapToDomain(assinatura);
 	}
 
 	private mapToDomain(assinatura: AssinaturaRecord): Assinatura {
@@ -61,16 +87,20 @@ export class PrismaAssinaturaRepository implements IAssinaturaRepository {
 			inicioFidelidade: assinatura.inicioFidelidade,
 			fimFidelidade: assinatura.fimFidelidade,
 			dataUltimoPagamento: assinatura.dataUltimoPagamento,
+			custoFinal: assinatura.custoFinal,
+			descricao: assinatura.descricao,
 		});
 	}
 }
 
 type AssinaturaRecord = {
 	// Campos retornados pelo Prisma.
-	codigo: string;
-	codPlano: string;
-	codCli: string;
+	codigo: number;
+	codPlano: number;
+	codCli: number;
 	inicioFidelidade: Date;
 	fimFidelidade: Date;
 	dataUltimoPagamento: Date | null;
+	custoFinal: number;
+	descricao: string;
 };

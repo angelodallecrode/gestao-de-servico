@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { Assinatura } from "../../domain/Assinatura.js";
 import { CriarAssinatura } from "../../application/use-cases/CriarAssinatura.js";
 import { ListarAssinaturas } from "../../application/use-cases/ListarAssinaturas.js";
+import { VerificarAssinaturaAtiva } from "../../application/use-cases/VerificarAssinaturaAtiva.js";
 
 const TIPOS_VALIDOS = ["TODOS", "ATIVOS", "CANCELADOS"] as const;
 type Tipo = (typeof TIPOS_VALIDOS)[number];
@@ -9,22 +10,33 @@ type Tipo = (typeof TIPOS_VALIDOS)[number];
 export class AssinaturaController {
 	private readonly criarAssinatura: CriarAssinatura;
 	private readonly listarAssinaturas: ListarAssinaturas;
+	private readonly verificarAssinaturaAtiva: VerificarAssinaturaAtiva;
 
-	constructor(criarAssinatura: CriarAssinatura, listarAssinaturas: ListarAssinaturas) {
+	constructor(
+		criarAssinatura: CriarAssinatura,
+		listarAssinaturas: ListarAssinaturas,
+		verificarAssinaturaAtiva: VerificarAssinaturaAtiva
+	) {
 		this.criarAssinatura = criarAssinatura;
 		this.listarAssinaturas = listarAssinaturas;
+		this.verificarAssinaturaAtiva = verificarAssinaturaAtiva;
 	}
 
 	async criar(req: Request, res: Response): Promise<Response> {
 		try {
 			const { codCli, codPlano, custoFinal, descricao } = req.body as {
-				codCli?: string;
-				codPlano?: string;
+				codCli?: number;
+				codPlano?: number;
 				custoFinal?: number;
 				descricao?: string;
 			};
 
-			if (!codCli || !codPlano || typeof custoFinal !== "number" || !descricao) {
+			if (
+				typeof codCli !== "number" ||
+				typeof codPlano !== "number" ||
+				typeof custoFinal !== "number" ||
+				!descricao
+			) {
 				return res.status(400).json({ message: "Dados invalidos." });
 			}
 
@@ -66,9 +78,9 @@ export class AssinaturaController {
 
 	async listarPorCliente(req: Request, res: Response): Promise<Response> {
 		try {
-			const codcli = req.params.codcli as string;
+			const codcli = Number(req.params.codcli);
 
-			if (!codcli) {
+			if (!Number.isInteger(codcli)) {
 				return res.status(400).json({ message: "Dados invalidos." });
 			}
 
@@ -82,9 +94,9 @@ export class AssinaturaController {
 
 	async listarPorPlano(req: Request, res: Response): Promise<Response> {
 		try {
-			const codplano = req.params.codplano as string;
+			const codplano = Number(req.params.codplano);
 
-			if (!codplano) {
+			if (!Number.isInteger(codplano)) {
 				return res.status(400).json({ message: "Dados invalidos." });
 			}
 
@@ -93,6 +105,23 @@ export class AssinaturaController {
 			return res.status(200).json(assinaturas.map(AssinaturaController.toResponseDTO));
 		} catch (error) {
 			return res.status(500).json({ message: "Erro ao listar assinaturas." });
+		}
+	}
+
+	async verificarAtiva(req: Request, res: Response): Promise<Response> {
+		try {
+			const codass = Number(req.params.codass);
+
+			if (!Number.isInteger(codass)) {
+				return res.status(400).json({ message: "Dados invalidos." });
+			}
+
+			// Responde apenas o booleano de atividade da assinatura.
+			const ativa = await this.verificarAssinaturaAtiva.executar(codass);
+
+			return res.status(200).json(ativa);
+		} catch (error) {
+			return res.status(500).json({ message: "Erro ao verificar assinatura." });
 		}
 	}
 

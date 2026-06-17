@@ -1,6 +1,6 @@
 export class Plano {
 	// Identificador do plano.
-	public readonly codigo: string;
+	public readonly codigo: number;
 	// Nome do plano.
 	public readonly nome: string;
 	// Valor mensal do plano.
@@ -11,18 +11,26 @@ export class Plano {
 	public readonly descricao: string;
 
 	constructor(params: {
-		codigo: string;
+		codigo: number;
 		nome: string;
 		custoMensal: number;
 		data: Date;
 		descricao: string;
 	}) {
 		// Validacoes basicas de preenchimento e valores.
-		this.codigo = Plano.requireNonEmpty(params.codigo, "codigo");
+		this.codigo = Plano.requireId(params.codigo, "codigo");
 		this.nome = Plano.requireNonEmpty(params.nome, "nome");
 		this.custoMensal = Plano.requirePositiveNumber(params.custoMensal, "custoMensal");
 		this.data = Plano.requireValidDate(params.data, "data");
 		this.descricao = Plano.requireNonEmpty(params.descricao, "descricao");
+	}
+
+	private static requireId(value: number, field: string): number {
+		if (!Number.isInteger(value) || value <= 0) {
+			throw new Error(`${field} invalido.`);
+		}
+
+		return value;
 	}
 
 	private static requireNonEmpty(value: string, field: string): string {
