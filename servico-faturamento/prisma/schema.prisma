@@ -1,0 +1,17 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Pagamento {
+  codigo        Int      @id @default(autoincrement())
+  codAss        Int
+  valorPago     Float
+  dataPagamento DateTime
+}

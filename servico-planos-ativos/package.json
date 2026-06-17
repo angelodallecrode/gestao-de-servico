@@ -1,0 +1,27 @@
+{
+  "name": "servico-planos-ativos",
+  "version": "1.0.0",
+  "description": "Microsservico - Consulta de planos ativos com cache",
+  "main": "src/infrastructure/web/server.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/infrastructure/web/server.ts",
+    "start": "tsx src/infrastructure/web/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.1",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "dotenv": "^16.4.5",
+    "express": "^5.2.1"
+  }
+}

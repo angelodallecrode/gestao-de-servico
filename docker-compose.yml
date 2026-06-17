@@ -1,0 +1,73 @@
+services:
+  # Broker de mensagens (eventos de pagamento).
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: broker
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Painel de gerenciamento (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Servico principal: clientes, planos e assinaturas.
+  servico-gestao:
+    build: ./servico-gestao
+    container_name: servico-gestao
+    ports:
+      - "3000:3000"
+    environment:
+      BROKER_URL: "amqp://rabbitmq:5672"
+      DATABASE_URL: "file:./prisma/dev.db"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # Microsservico de faturamento: registra pagamentos e gera eventos.
+  servico-faturamento:
+    build: ./servico-faturamento
+    container_name: servico-faturamento
+    ports:
+      - "3001:3001"
+    environment:
+      BROKER_URL: "amqp://rabbitmq:5672"
+      DATABASE_URL: "file:./prisma/dev.db"
+      PORT: "3001"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # Microsservico de planos ativos: cache + consulta sincrona.
+  servico-planos-ativos:
+    build: ./servico-planos-ativos
+    # Sem container_name para permitir multiplas instancias (--scale).
+    ports:
+      - "3002:3002"
+    environment:
+      BROKER_URL: "amqp://rabbitmq:5672"
+      # Consulta o ServicoGestao atraves do API Gateway.
+      GESTAO_URL: "http://api-gateway"
+      PORT: "3002"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      servico-gestao:
+        condition: service_started
+
+  # API Gateway: ponto de entrada unico e hub de comunicacao.
+  api-gateway:
+    image: nginx:alpine
+    container_name: api-gateway
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      servico-gestao:
+        condition: service_started
+      servico-faturamento:
+        condition: service_started
+      servico-planos-ativos:
+        condition: service_started
