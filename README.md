@@ -1,7 +1,7 @@
 # Sistema de Gestão de Assinaturas
 
 Arquitetura mista (serviço principal + microsserviços) integrada por **API Gateway** e
-**message broker**, conforme a especificação da disciplina.
+**message broker**.
 
 ## Componentes
 
